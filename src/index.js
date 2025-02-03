@@ -5,13 +5,14 @@ const app = express();
 
 //while writing the routes is matter of sequence(order)
 
-app.get("/user", (req, res)=>{
+app.get("/user/:userId/:name/:password", (req, res)=>{
+    console.log("req",req.params)
     res.send({firstName:"Devi", lastName:"Kanth"})
 });
 
 
 app.post("/user", (req, res)=>{
-    console.log("Save The Data Successfully");
+    console.log("Save The Data Successfully", req.query);
     res.send("Data Saved")
 })
 
