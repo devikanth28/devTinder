@@ -32,6 +32,22 @@ app.use("/test", (req, res)=>{
 // });
 
 
+// route handler signature is like
+
+// app.use("/route", rH1, rH2, rH3, rH4, rH5);
+
+app.use("/multiRequest", (req, res, next)=>{
+    console.log("first Request");
+    // res.send("First Request");
+    next();
+},
+
+(req, res)=>{
+    console.log("2nd Request");
+    res.send("2nd Request")
+}
+
+)
 
 app.listen(7777, ()=>{
     console.log("server successfully listening on port 3003")
