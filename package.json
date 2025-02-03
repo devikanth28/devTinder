@@ -1,0 +1,19 @@
+{
+  "name": "devtinderbe",
+  "version": "1.0.0",
+  "description": "tinder for Developers",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "keywords": [
+    "nodejs",
+    "javascript"
+  ],
+  "author": "Devikanth",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
