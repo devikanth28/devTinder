@@ -4,8 +4,10 @@ const {adminAuth} = require("./middileware/auth");
 const connectDB = require("./config/database")
 const app = express();
 const User = require('./models/user');
-
+const {vallidateSignUpData} = require('./utils/validation')
 app.use(express.json());
+const bcrypt = require("bcrypt");
+const { isPassportNumber } = require("validator");
 
 //while writing the routes is matter of sequence(order)
 
@@ -92,9 +94,28 @@ app.post("/signup", async (req, res)=>{
     //     emailId:"dhoni@gmail.com",
     //     password:"doni12345"
     // }
-    const user = new User(req.body);
-    await user.save();
-    res.send("User added successfully")
+
+    try { 
+        //validation
+        vallidateSignUpData(req);
+
+
+        //encrypt the password
+        const {password} = req.body;
+        const passwordHash = await bcrypt.hash(password, 10);
+        console.log("passwordHash", passwordHash)
+        // {firstName, lastName, emailId, password:passwordHash}
+        const user = new User({
+            firstName:req.body.firstName,
+            lastName:req.body.lastName,
+            emailId:req.body.emailId,
+            password:passwordHash
+        });
+        await user.save();
+        res.send("User added successfully");
+    } catch (err) {
+        res.status(404).send(err.message)
+    }
 });
 
 app.get("/email", async (req, res) => {
@@ -124,7 +145,7 @@ app.get("/feed", async (req, res)=>{
         res.send(users)
     }
     catch(err){
-        console.log("something went wrong")
+        console.log("something  went wrong")
     }
 });
 
@@ -137,6 +158,32 @@ app.delete("/user", async (req, res)=>{
     }
     catch(err){
         res.status(404).send("not able to find id");
+    }
+})
+
+app.post("/login", async (req, res)=>{
+    try{
+        const {emailId, password} = req.body;
+        const user = await User.find({emailId: emailId});
+        // console.log("USER", user);
+        //res.send("user fetched")
+        if(!user){
+            throw new Error("EmailID is not present in DB");
+            
+        }
+        
+        const ispasswordValid = await bcrypt.compare(password, user[0].password);
+        console.log("ispasswordvalid", ispasswordValid);
+        if(ispasswordValid){
+            res.send("login successfulll");
+        }
+        else{
+            res.send("password is not valid");
+        }
+
+
+    } catch(err){
+        res.send(400).send("Error",err.message);
     }
 })
 

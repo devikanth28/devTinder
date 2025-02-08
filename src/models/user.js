@@ -5,7 +5,7 @@ const userSchema = mongoose.Schema({
         type:String,
         required:true,
         minLength:4,
-        maxLength:100
+        maxLength:50
     },
     lastName:{
         type:String,
@@ -45,7 +45,7 @@ const userSchema = mongoose.Schema({
     skills:{
         type:[String]
     },
-    timestamps:true,
+    // timeStamps:true,
 });
 
 // const userModel = 
