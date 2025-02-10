@@ -1,20 +1,43 @@
 // console.log("starting a new Project, welcome to DevTinder");
+// const express = require("express");
+// const {adminAuth} = require("./middileware/auth");
+// const connectDB = require("./config/database")
+// const User = require('./models/user');
+// const {vallidateSignUpData} = require('./utils/validation')
+// const bcrypt = require("bcrypt");
+// const { isPassportNumber } = require("validator");
+// const {userAuth} = require("./middileware/auth")
+// const cookieParser = require("cookie-parser");
+// // const jwt = require("jsonwebtoken");
+// const jwt = require('jsonwebtoken');
+// const app = express();
+// app.use(express.json());
+// app.use(cookieParser());
+
+
 const express = require("express");
-const {adminAuth} = require("./middileware/auth");
-const connectDB = require("./config/database")
+const connectDB = require("./config/database");
 const app = express();
-const User = require('./models/user');
-const {vallidateSignUpData} = require('./utils/validation')
 app.use(express.json());
-const bcrypt = require("bcrypt");
-const { isPassportNumber } = require("validator");
+// const cookieParser = require("cookie-parser");
+// const cors = require("cors");
+// const http = require("http");
+
+const authRouter = require("./routes/auth");
+const profileRouter = require("./routes/profile");
+const requestsRouter = require("./routes/requests"); 
+
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", requestsRouter);
+
 
 //while writing the routes is matter of sequence(order)
 
-app.get("/user/:userId/:name/:password", (req, res)=>{
-    console.log("req",req.params)
-    res.send({firstName:"Devi", lastName:"Kanth"})
-});
+// app.get("/user/:userId/:name/:password", userAuth, (req, res)=>{
+//     console.log("req",req.params)
+//     res.send({firstName:"Devi", lastName:"Kanth"})
+// });
 
 
 app.post("/user", (req, res)=>{
@@ -67,7 +90,7 @@ app.use("/multiRequest", (req, res, next)=>{
 //     }
 // });
 
-app.use("/admin", adminAuth)
+// app.use("/admin", adminAuth)
 
 
 app.get("/admin/getAllData", (req, res)=>{
@@ -85,38 +108,7 @@ app.get("/admin/getAllData", (req, res)=>{
 });
 
 
-app.post("/signup", async (req, res)=>{
-    // console.log("req",req.body);
-    // res.send("Devikanth")
-    // const userObj = {
-    //     firstName:"Ms Dhoni",
-    //     lastName:"Kanth",
-    //     emailId:"dhoni@gmail.com",
-    //     password:"doni12345"
-    // }
 
-    try { 
-        //validation
-        vallidateSignUpData(req);
-
-
-        //encrypt the password
-        const {password} = req.body;
-        const passwordHash = await bcrypt.hash(password, 10);
-        console.log("passwordHash", passwordHash)
-        // {firstName, lastName, emailId, password:passwordHash}
-        const user = new User({
-            firstName:req.body.firstName,
-            lastName:req.body.lastName,
-            emailId:req.body.emailId,
-            password:passwordHash
-        });
-        await user.save();
-        res.send("User added successfully");
-    } catch (err) {
-        res.status(404).send(err.message)
-    }
-});
 
 app.get("/email", async (req, res) => {
     const userEmail = req.body.emailId;
@@ -161,32 +153,78 @@ app.delete("/user", async (req, res)=>{
     }
 })
 
-app.post("/login", async (req, res)=>{
-    try{
-        const {emailId, password} = req.body;
-        const user = await User.find({emailId: emailId});
-        // console.log("USER", user);
-        //res.send("user fetched")
-        if(!user){
-            throw new Error("EmailID is not present in DB");
+// app.post("/login", async (req, res)=>{
+//     try{
+//         const {emailId, password} = req.body;
+//         const user = await User.find({emailId: emailId});
+//         // console.log("USER", user);
+//         //res.send("user fetched")
+//         if(!user){
+//             throw new Error("EmailID is not present in DB");
             
-        }
+//         }
         
-        const ispasswordValid = await bcrypt.compare(password, user[0].password);
-        console.log("ispasswordvalid", ispasswordValid);
-        if(ispasswordValid){
-            res.send("login successfulll");
-        }
-        else{
-            res.send("password is not valid");
-        }
+//         const ispasswordValid = await bcrypt.compare(password, user[0].password);
+        
+//         if(ispasswordValid){
+
+//             const token = await jwt.sign({_id:user[0]._id}, "DEV@Tinder$790");
+//             console.log("token", token);
+
+//             res.cookie("token", token);
+//             res.send("login successfulll");
+//         }
+//         else{
+//             res.send("password is not valid");
+//         }
 
 
-    } catch(err){
-        res.send(400).send("Error",err.message);
-    }
-})
+//     } catch(err){
+//         res.send(400).send("Error",err.message);
+//     }
+// })
 
+
+// app.get("/profile", userAuth, async (req, res) => {
+//     // const cookies = req.cookies;
+//     // console.log("COOOOO", cookies);
+//     // if (!cookies || !cookies.token) {
+//     //     return res.status(401).send("Unauthorized: No token provided");
+//     // }
+    
+//     // const token = cookies.token;
+//     // console.log("token", token);
+
+//     try {
+//         const user = req.user;
+//         res.send(user);
+//         // if(!user){
+//         //     throw new Error("user does not exist");
+            
+//         // }
+//         // const decodedMessage = await jwt.verify(token, "DEVTinder@790");
+//         // console.log("DECODEDMESSAGE", decodedMessage);
+//         // res.send("Reading cookies");
+//     } catch (error) {
+//         // console.error("JWT Verification Error:", error.message);
+//         // return res.status(403).send("Forbidden: Invalid token");
+//         res.status(400).send("ERROR",err.message);
+//     }
+// });
+
+// create JWT Token
+
+
+
+
+// Add the Token to cookie and the response back to the user
+
+
+// app.post("/sendConnectionRequest", userAuth, async (req, res)=>{
+//     console.log("sending connection request");
+
+//     res.send("Connection Request sent");
+// })
 
 connectDB().then(()=>{
     console.log("connection happend");
