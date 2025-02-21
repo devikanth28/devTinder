@@ -7,29 +7,43 @@
 // const bcrypt = require("bcrypt");
 // const { isPassportNumber } = require("validator");
 // const {userAuth} = require("./middileware/auth")
-// const cookieParser = require("cookie-parser");
+const cookieParser = require("cookie-parser");
 // // const jwt = require("jsonwebtoken");
 // const jwt = require('jsonwebtoken');
 // const app = express();
 // app.use(express.json());
-// app.use(cookieParser());
 
-
+const cors = require('cors');
 const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
+app.use(cookieParser());
 app.use(express.json());
+app.use(cors({
+    origin: "http://localhost:5173",  // Ensure this matches your frontend URL
+    credentials: true,  // ✅ Required if using cookies/auth headers
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"], // ✅ Ensure PATCH is included
+    allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allow necessary headers
+    preflightContinue: false, 
+    optionsSuccessStatus: 204  // ✅ Ensures preflight requests resolve successfully
+}));
+
+// ✅ Explicitly handle OPTIONS requests globally
+app.options("*", cors()); 
+
 // const cookieParser = require("cookie-parser");
 // const cors = require("cors");
 // const http = require("http");
 
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
-const requestsRouter = require("./routes/requests"); 
+const requestsRouter = require("./routes/requests");
+const userRouter = require("./routes/userRouter") 
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestsRouter);
+app.use("/",userRouter);
 
 
 //while writing the routes is matter of sequence(order)
@@ -131,15 +145,15 @@ app.get("/email", async (req, res) => {
 
 //if you want visit the methodss go to the mongoose docs api model
 
-app.get("/feed", async (req, res)=>{
-    try{
-        const users = await User.find({});
-        res.send(users)
-    }
-    catch(err){
-        console.log("something  went wrong")
-    }
-});
+// app.get("/feed", async (req, res)=>{
+//     try{
+//         const users = await User.find({});
+//         res.send(users)
+//     }
+//     catch(err){
+//         console.log("something  went wrong")
+//     }
+// });
 
 app.delete("/user", async (req, res)=>{
     const userId = req.body.userId;
@@ -229,7 +243,7 @@ app.delete("/user", async (req, res)=>{
 connectDB().then(()=>{
     console.log("connection happend");
     app.listen(7777, ()=>{
-        console.log("server successfully listening on port 3003")
+        console.log("server successfully listening on port 7777")
     })
 }).catch((err)=>{
     console.log("Database canot be connected")
