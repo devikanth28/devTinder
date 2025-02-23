@@ -1,35 +1,42 @@
-// console.log("starting a new Project, welcome to DevTinder");
-// const express = require("express");
-// const {adminAuth} = require("./middileware/auth");
-// const connectDB = require("./config/database")
-// const User = require('./models/user');
-// const {vallidateSignUpData} = require('./utils/validation')
-// const bcrypt = require("bcrypt");
-// const { isPassportNumber } = require("validator");
-// const {userAuth} = require("./middileware/auth")
-const cookieParser = require("cookie-parser");
-// // const jwt = require("jsonwebtoken");
-// const jwt = require('jsonwebtoken');
-// const app = express();
-// app.use(express.json());
 
+const cookieParser = require("cookie-parser");
 const cors = require('cors');
 const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
-app.use(cookieParser());
-app.use(express.json());
+
 app.use(cors({
-    origin: "http://localhost:5173",  // Ensure this matches your frontend URL
-    credentials: true,  // ✅ Required if using cookies/auth headers
-    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"], // ✅ Ensure PATCH is included
-    allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allow necessary headers
-    preflightContinue: false, 
-    optionsSuccessStatus: 204  // ✅ Ensures preflight requests resolve successfully
+    origin: "http://localhost:5173", // Ensure this matches frontend URL
+    credentials: true,
+    methods: ["GET","HEAD","PUT","PATCH","POST","DELETE","OPTIONS"], // ✅ Ensure PATCH & OPTIONS are allowed
+    // allowedHeaders: ["Content-Type", "Authorization"],
+
+    // preflightContinue: false,
+    // optionsSuccessStatus: 204,
 }));
 
 // ✅ Explicitly handle OPTIONS requests globally
-app.options("*", cors()); 
+// ✅ Explicitly Handle OPTIONS Requests
+// app.options("*", cors());
+
+
+
+// app.use((req, res, next) => {
+//     res.header("Access-Control-Allow-Origin", "http://localhost:5173"); // Allow specific domain
+//     res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS"); // Include PATCH
+//     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    
+//     console.log("REQ index", req.method);
+//     if (req.method === "OPTIONS") {
+//       return res.sendStatus(200); // Handle preflight request
+//     }
+//     next();
+//   });
+
+// app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(express.json());
 
 // const cookieParser = require("cookie-parser");
 // const cors = require("cors");

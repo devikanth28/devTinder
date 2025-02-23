@@ -2,8 +2,11 @@ const express = require('express');
 const { userAuth } = require('../middileware/auth');
 const user = require('../models/user');
 const { validateEditProfileData } = require("../utils/validation");
+const cors = require("cors");
 
 const profileRouter = express.Router();
+// ✅ Handle OPTIONS Preflight for PATCH
+profileRouter.options("/edit", cors());  
 
 profileRouter.get("/profile/view", userAuth, async (req, res) => {
     try {
